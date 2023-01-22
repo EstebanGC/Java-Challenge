@@ -25,7 +25,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResponseEntity<CustomPageResponse> getProduct(int page, int size) {
-        log.info("Init getProduct with: {}");
+        log.info("Init getProduct with: ");
         ResponseEntity<CustomPageResponse> response;
         try {
             Pageable pageable = PageRequest.of(page, size);

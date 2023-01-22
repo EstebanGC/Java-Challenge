@@ -44,4 +44,4 @@ public class ProductController {
     public ResponseEntity<Void> deleteProduct(@PathVariable @Min(1) int productId) {
         return productService.deleteProduct(productId);
     }
-
+}
