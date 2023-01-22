@@ -13,9 +13,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CustomPageResponse {
+public class CustomPageResponse<T> {
+
     private long totalElements;
     private int totalPage;
     private boolean lastPage;
     private T data;
+
 }
