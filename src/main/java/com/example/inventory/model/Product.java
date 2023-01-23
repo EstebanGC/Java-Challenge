@@ -28,9 +28,9 @@ public class Product {
     @Column(name = "enabled")
     private boolean enabled;
 
-    @Column(name = "name")
+    @Column(name = "min")
     private int min;
 
-    @Column(name = "name")
+    @Column(name = "max")
     private int max;
 }
