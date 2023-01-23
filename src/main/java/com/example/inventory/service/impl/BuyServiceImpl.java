@@ -8,6 +8,7 @@ import com.example.inventory.model.Product;
 import com.example.inventory.repository.BuyRepository;
 import com.example.inventory.repository.ProductRepository;
 import com.example.inventory.service.BuyService;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -55,20 +56,27 @@ public class BuyServiceImpl implements BuyService {
         log.info("Init saveBuy with: {}", buyDto);
         ResponseEntity<String> response;
         try {
-            Buy buy = Buy.builder()
-                    .date(buyDto.getDate())
-                    .clientIdType(buyDto.getClientIdType())
-                    .clientId(buyDto.getClientId())
-                    .clientName(buyDto.getClientName())
-                    .products(buyDto.getProducts()
-                            .stream()
-                            .map(buyDetailDto -> BuyProduct.builder()
-                                    .product(Product.builder()
-                                            .productId(buyDetailDto.getProductId()).build())
-                                    .quantity(buyDetailDto.getQuantity()).build()).collect(Collectors.toSet())).build();
-            buy.getProducts().forEach(buyProduct -> buyProduct.setBuy(buy));
-            buyRepository.save(buy);
-            response = ResponseEntity.ok().build();
+            String responseIsAValidPurchase = isAValidPurchase(buyDto.getProducts());
+            if (StringUtils.isBlank(responseIsAValidPurchase)) {
+                Buy buy = Buy.builder()
+                        .date(buyDto.getDate())
+                        .clientIdType(buyDto.getClientIdType())
+                        .clientId(buyDto.getClientId())
+                        .clientName(buyDto.getClientName())
+                        .products(buyDto.getProducts()
+                                .stream()
+                                .map(buyDetailDto -> BuyProduct.builder()
+                                        .product(Product.builder()
+                                                .productId(buyDetailDto.getProductId()).build())
+                                        .quantity(buyDetailDto.getQuantity()).build()).collect(Collectors.toSet())).build();
+
+                buy.getProducts().forEach(buyProduct -> buyProduct.setBuy(buy));
+                buyRepository.save(buy);
+                deductUnits(buyDto.getProducts());
+                response = ResponseEntity.ok().build();
+            }else {
+                response = ResponseEntity.badRequest().body(responseIsAValidPurchase);
+            }
         } catch (Exception e){
             log.info("Error in saveBuy with messageError: {}", e.getMessage());
             response = ResponseEntity.internalServerError().build();
