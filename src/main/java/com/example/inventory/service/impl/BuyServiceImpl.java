@@ -51,9 +51,9 @@ public class BuyServiceImpl implements BuyService {
     }
 
     @Override
-    public ResponseEntity<Void> saveBuy(BuyDto buyDto) {
+    public ResponseEntity<String> saveBuy(BuyDto buyDto) {
         log.info("Init saveBuy with: {}", buyDto);
-        ResponseEntity<Void> response;
+        ResponseEntity<String> response;
         try {
             Buy buy = Buy.builder()
                     .date(buyDto.getDate())

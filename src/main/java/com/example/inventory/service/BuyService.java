@@ -7,5 +7,5 @@ import java.util.List;
 public interface BuyService {
 
     ResponseEntity<List<BuyDto>> getBuys();
-    ResponseEntity<Void> saveBuy(BuyDto buyDto);
+    ResponseEntity<String> saveBuy(BuyDto buyDto);
 }
