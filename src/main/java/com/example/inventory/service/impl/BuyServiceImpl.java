@@ -6,6 +6,7 @@ import com.example.inventory.dto.BuyDto;
 import com.example.inventory.model.BuyProduct;
 import com.example.inventory.model.Product;
 import com.example.inventory.repository.BuyRepository;
+import com.example.inventory.repository.ProductRepository;
 import com.example.inventory.service.BuyService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -21,6 +23,7 @@ import java.util.stream.Collectors;
 public class BuyServiceImpl implements BuyService {
 
     private final BuyRepository buyRepository;
+    private final ProductRepository productRepository;
 
     @Override
     public ResponseEntity<List<BuyDto>> getBuys() {
@@ -71,6 +74,55 @@ public class BuyServiceImpl implements BuyService {
             response = ResponseEntity.internalServerError().build();
         }
         return response;
+    }
+
+    /**
+     * Method to validate buy restrictions
+     *
+     * @param buyDetailDtoList //productList
+     * @return //errorMessage in case of a restriction
+     */
+    private String isAValidPurchase(List<BuyDetailDto> buyDetailDtoList) {
+        //Validate is it's available
+        String response = "";
+        for (BuyDetailDto buyDetailDto : buyDetailDtoList) {
+            Optional<Product> productOptional = productRepository.findById(buyDetailDto.getProductId());
+            if(productOptional.isPresent()){
+                Product product = productOptional.get();
+                //validate availability
+                if (!product.isEnabled()) {
+                    response = "The product is not available";
+                    break;
+                }
+                if (buyDetailDto.getQuantity() > product.getInInventory()){
+                    response = "The amount requested is not in the inventory";
+                    break;
+                }
+                if (buyDetailDto.getQuantity() < product.getMin()) {
+                    response = "The amount requested doesn't have the minimum to buy";
+                    break;
+                }
+                if (buyDetailDto.getQuantity() > product.getMax()) {
+                    response = "The amount requested exceeds the maximum allowed per buy";
+                    break;
+                }
+            }
+        }
+        return response;
+    }
+    /**
+     * Method to discount quantities after each buy
+     * @param buyDetailDtoList //productList
+     */
+    private void deductUnits(List<BuyDetailDto> buyDetailDtoList) {
+        for (BuyDetailDto buyDetailDto: buyDetailDtoList){
+            Optional<Product> productOptional = productRepository.findById(buyDetailDto.getProductId());
+            if(productOptional.isPresent()){
+                Product product = productOptional.get();
+                product.setInInventory(product.getInInventory() - buyDetailDto.getQuantity());
+                productRepository.save(product);
+            }
+        }
     }
 }
 

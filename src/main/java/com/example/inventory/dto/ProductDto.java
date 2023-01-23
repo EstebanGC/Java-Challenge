@@ -30,6 +30,4 @@ public class ProductDto {
 
     @Min(1)
     private int max;
-
-
 }
