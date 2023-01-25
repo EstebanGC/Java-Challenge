@@ -1,6 +1,8 @@
 # Inventory
 
-API Consumption:
+#### App created with Spring Boot and Gradle to manage dependencies to simulate an inventory with products and buys. 
+
+## API Consumption:
 
 ![img](https://user-images.githubusercontent.com/45727470/213973780-d1a3e1b3-40da-4694-a86e-88a7cd454293.png)
 
