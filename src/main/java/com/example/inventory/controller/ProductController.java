@@ -4,6 +4,10 @@ package com.example.inventory.controller;
 import com.example.inventory.dto.CustomPageResponse;
 import com.example.inventory.dto.ProductDto;
 import com.example.inventory.service.ProductService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +25,7 @@ public class ProductController {
 
     private final ProductService productService;
 
+//
     @GetMapping(value = "/product")
     public ResponseEntity<CustomPageResponse> getProduct(
             @RequestParam @Min(0) Integer page,
