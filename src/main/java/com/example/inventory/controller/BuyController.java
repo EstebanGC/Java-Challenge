@@ -21,12 +21,12 @@ public class BuyController {
 
     private final BuyService buyService;
 
-    @GetMapping(value = "/buy")
+    @GetMapping(value = "/get/buy")
     public ResponseEntity<List<BuyDto>> getBuy() {
         return buyService.getBuys();
     }
 
-    @PostMapping(value = "/buy")
+    @PostMapping(value = "/create/buy")
     public ResponseEntity<String> saveBuy(@RequestBody BuyDto buyDto) {
         return buyService.saveBuy(buyDto);
     }
